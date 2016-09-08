@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+# coding=utf-8
 from __future__ import division
-from subprocess import PIPE, Popen
+from subprocess import PIPE, Popen, check_output
 import psutil
 import time
 from ISStreamer.Streamer import Streamer
@@ -16,10 +17,8 @@ METRIC_UNITS = False
 # ---------------------------------
 
 def get_cpu_temperature():
-    process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE)
-    output, _error = process.communicate()
-    return float(output[output.index('=') + 1:output.rindex("'")])
-
+    cmd="sensors | grep temp1 | sed -e 's/temp1:\W*//' -e 's/°.*//'"
+    return float(check_output(cmd, shell=True))
 
 def main():
     streamer = Streamer(bucket_name=BUCKET_NAME, bucket_key=BUCKET_KEY, access_key=ACCESS_KEY)
